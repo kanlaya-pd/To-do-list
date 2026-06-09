@@ -387,6 +387,33 @@ body { font-family: 'IBM Plex Sans Thai', sans-serif; background: var(--bg); col
       width: 100%;
     }
 }
+/* ── Short Note ── */
+.note-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;transition:all .2s;position:relative;min-height:140px;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.note-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.note-color-bar{height:4px;border-radius:4px;margin-bottom:10px;flex-shrink:0;cursor:pointer}
+.note-title-text{font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px;line-height:1.4;cursor:pointer}
+.note-items-wrap{flex:1;display:flex;flex-direction:column;gap:5px}
+.note-item-row{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text2);line-height:1.4}
+.note-item-cb{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;margin-top:1px}
+.note-item-txt{flex:1;cursor:pointer;transition:all .15s;user-select:none}
+.note-item-txt.done{text-decoration:line-through;color:var(--text3)}
+.note-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid var(--border)}
+.note-card-count{font-size:10px;color:var(--text3)}
+.note-card-edit{background:transparent;border:none;cursor:pointer;color:var(--text3);font-size:11px;padding:3px 6px;border-radius:4px;transition:all .15s;font-family:inherit;display:flex;align-items:center;gap:4px}
+.note-card-edit:hover{color:var(--text);background:var(--surface2)}
+.note-add-card{background:transparent;border:1.5px dashed var(--border2);border-radius:var(--radius);padding:14px;cursor:pointer;transition:all .15s;min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--text3);font-size:13px;font-family:inherit;width:100%}
+.note-add-card:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.note-add-card i{font-size:28px}
+.note-color-dot{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0}
+.note-color-dot.sel{outline:2.5px solid var(--accent);outline-offset:2px}
+.note-item-modal-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.note-item-modal-cb{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.note-item-modal-txt{flex:1;font-size:13px;padding:6px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:inherit;outline:none}
+.note-item-modal-txt:focus{border-color:var(--accent)}
+.note-item-del{background:transparent;border:none;cursor:pointer;color:var(--text3);font-size:15px;padding:2px;transition:color .15s}
+.note-item-del:hover{color:var(--red)}
+.note-add-item-btn{display:flex;align-items:center;gap:6px;background:transparent;border:1px dashed var(--border2);border-radius:var(--radius-sm);padding:7px 12px;cursor:pointer;font-size:12px;color:var(--text2);font-family:inherit;width:100%;transition:all .15s}
+.note-add-item-btn:hover{border-color:var(--accent);color:var(--accent)}
 </style>
 
 <!-- Google Analytics -->
@@ -444,6 +471,7 @@ body { font-family: 'IBM Plex Sans Thai', sans-serif; background: var(--bg); col
       <button class="nav-btn active" onclick="navigate('today')"><i class="ti ti-sun"></i> วันนี้ <span class="nav-badge" id="overdue-badge" style="display:none"></span></button>
       <button class="nav-btn" onclick="navigate('week')"><i class="ti ti-layout-columns"></i> มุมมองสัปดาห์</button>
       <button class="nav-btn" onclick="navigate('dash')"><i class="ti ti-chart-bar"></i> สรุปผลงาน</button>
+      <button class="nav-btn" onclick="navigate('notes')"><i class="ti ti-notes"></i> Short Note</button>
       <div class="nav-label" style="margin-top:8px">จัดการ</div>
       <button class="nav-btn" onclick="navigate('notif')"><i class="ti ti-bell"></i> การแจ้งเตือน</button>
       <button class="nav-btn" onclick="navigate('settings')"><i class="ti ti-settings"></i> ตั้งค่า</button>
@@ -601,6 +629,15 @@ body { font-family: 'IBM Plex Sans Thai', sans-serif; background: var(--bg); col
         </div>
       </div>
 
+      <!-- SHORT NOTE -->
+      <div class="page" id="page-notes">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div style="font-size:13px;color:var(--text2)">กดที่ card เพื่อแก้ไข · กด checkbox เพื่อ tick done</div>
+          <button class="add-task-btn" onclick="openNoteModal()"><i class="ti ti-plus"></i> เพิ่ม note</button>
+        </div>
+        <div id="notes-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px"></div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -612,7 +649,7 @@ body { font-family: 'IBM Plex Sans Thai', sans-serif; background: var(--bg); col
     <button class="mobile-nav-btn active" onclick="navigate('today')"><i class="ti ti-sun"></i>วันนี้</button>
     <button class="mobile-nav-btn" onclick="navigate('week')"><i class="ti ti-layout-columns"></i>สัปดาห์</button>
     <button class="mobile-nav-btn" onclick="navigate('dash')"><i class="ti ti-chart-bar"></i>สรุป</button>
-    <button class="mobile-nav-btn" onclick="navigate('notif')"><i class="ti ti-bell"></i>แจ้งเตือน</button>
+    <button class="mobile-nav-btn" onclick="navigate('notes')"><i class="ti ti-notes"></i>Note</button>
     <button class="mobile-nav-btn" onclick="navigate('settings')"><i class="ti ti-settings"></i>ตั้งค่า</button>
   </div>
 </nav>
@@ -723,6 +760,48 @@ body { font-family: 'IBM Plex Sans Thai', sans-serif; background: var(--bg); col
   </div>
 </div>
 
+<!-- Short Note Modal -->
+<div class="modal-overlay" id="note-modal">
+  <div class="modal" style="width:min(400px,calc(100vw - 32px));box-sizing:border-box;max-height:85vh;display:flex;flex-direction:column">
+    <div class="modal-header" style="flex-shrink:0">
+      <div class="modal-title" id="note-modal-title">เพิ่ม note ใหม่</div>
+      <button class="icon-btn" onclick="closeModal('note-modal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div style="overflow-y:auto;flex:1">
+      <input type="hidden" id="note-edit-id">
+      <div class="form-group">
+        <label class="form-label">ชื่อเรื่อง *</label>
+        <input type="text" class="form-input" id="note-title-input" placeholder="เช่น งาน PR เดือนมิ.ย.">
+      </div>
+      <div class="form-group">
+        <label class="form-label">สี</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap" id="note-color-row">
+          <div class="note-color-dot sel" data-color="#FFD180" style="background:#FFD180" onclick="selectNoteColor(this)"></div>
+          <div class="note-color-dot" data-color="#F48FB1" style="background:#F48FB1" onclick="selectNoteColor(this)"></div>
+          <div class="note-color-dot" data-color="#80CBC4" style="background:#80CBC4" onclick="selectNoteColor(this)"></div>
+          <div class="note-color-dot" data-color="#90CAF9" style="background:#90CAF9" onclick="selectNoteColor(this)"></div>
+          <div class="note-color-dot" data-color="#CE93D8" style="background:#CE93D8" onclick="selectNoteColor(this)"></div>
+          <div class="note-color-dot" data-color="#A5D6A7" style="background:#A5D6A7" onclick="selectNoteColor(this)"></div>
+          <div class="note-color-dot" data-color="#FFAB91" style="background:#FFAB91" onclick="selectNoteColor(this)"></div>
+          <div class="note-color-dot" data-color="#B0BEC5" style="background:#B0BEC5" onclick="selectNoteColor(this)"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">รายการ</label>
+        <div id="note-items-list"></div>
+        <button class="note-add-item-btn" onclick="addNoteItemRow()">
+          <i class="ti ti-plus" style="font-size:13px"></i> เพิ่มรายการ
+        </button>
+      </div>
+    </div>
+    <div class="btn-row" style="flex-shrink:0">
+      <button class="btn-cancel" onclick="closeModal('note-modal')">ยกเลิก</button>
+      <button class="btn-danger" id="note-delete-btn" style="display:none" onclick="deleteNote()">ลบ</button>
+      <button class="btn-save" onclick="saveNote()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"><i class="ti ti-check"></i><span id="toast-msg"></span></div>
 
@@ -818,6 +897,7 @@ window.initApp = function() {
       setupUserUI(user);
       await loadCats();
       subscribeToTasks();
+      subscribeToNotes();
       applyRecurring();
       setTopbarDate();
       navigate('today');
@@ -826,6 +906,7 @@ window.initApp = function() {
       document.getElementById('login-screen').style.display = 'flex';
       document.getElementById('app-shell').style.display = 'none';
       if (unsubscribeTasks) { unsubscribeTasks(); unsubscribeTasks = null; }
+      if (unsubscribeNotes) { unsubscribeNotes(); unsubscribeNotes = null; }
     }
   });
 };
@@ -913,7 +994,7 @@ async function applyRecurring() {
 }
 
 // ══ NAVIGATION ══
-const pageNames = { today:'วันนี้', week:'มุมมองสัปดาห์', dash:'สรุปผลงาน', notif:'การแจ้งเตือน', settings:'ตั้งค่า' };
+const pageNames = { today:'วันนี้', week:'มุมมองสัปดาห์', dash:'สรุปผลงาน', notes:'Short Note', notif:'การแจ้งเตือน', settings:'ตั้งค่า' };
 function navigate(page) {
   currentPage = page;
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -921,12 +1002,16 @@ function navigate(page) {
   document.getElementById('page-' + page).classList.add('active');
   document.querySelectorAll(`[onclick="navigate('${page}')"]`).forEach(b => b.classList.add('active'));
   document.getElementById('page-title').textContent = pageNames[page] || page;
+  // show/hide add task btn based on page
+  const taskBtn = document.querySelector('.add-task-btn');
+  if (taskBtn) taskBtn.style.display = page === 'notes' ? 'none' : '';
   renderCurrentPage();
 }
 function renderCurrentPage() {
   if (currentPage === 'today') renderToday();
   else if (currentPage === 'week') renderWeek();
   else if (currentPage === 'dash') renderDash();
+  else if (currentPage === 'notes') renderNotes();
   else if (currentPage === 'notif') renderNotif();
   else if (currentPage === 'settings') renderSettings();
 }
@@ -1498,6 +1583,167 @@ document.addEventListener('keydown', e => {
 
 // Notification permission
 if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+
+// ══ SHORT NOTE ══
+let notes = [];
+let noteSelectedColor = '#FFD180';
+let unsubscribeNotes = null;
+
+function notesCol() {
+  const { db, collection } = fb();
+  return collection(db, 'users', currentUser.uid, 'notes');
+}
+
+function subscribeToNotes() {
+  const { onSnapshot } = fb();
+  if (unsubscribeNotes) unsubscribeNotes();
+  unsubscribeNotes = onSnapshot(notesCol(), snap => {
+    notes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    notes.sort((a,b) => (b.createdAt||'') > (a.createdAt||'') ? 1 : -1);
+    if (currentPage === 'notes') renderNotes();
+  });
+}
+
+async function saveNoteToFirebase(note) {
+  const { db, doc, setDoc } = fb();
+  await setDoc(doc(db, 'users', currentUser.uid, 'notes', note.id), note);
+}
+
+async function deleteNoteFromFirebase(id) {
+  const { db, doc, deleteDoc } = fb();
+  await deleteDoc(doc(db, 'users', currentUser.uid, 'notes', id));
+}
+
+function renderNotes() {
+  const grid = document.getElementById('notes-grid');
+  if (!grid) return;
+  if (notes.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text3)">
+      <i class="ti ti-notes" style="font-size:40px;display:block;margin-bottom:12px"></i>
+      <p style="font-size:13px">ยังไม่มี note<br>กด "+ เพิ่ม note" เพื่อเริ่มต้น</p>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = notes.map(n => {
+    const items = n.items || [];
+    const done = items.filter(i => i.done).length;
+    const total = items.length;
+    const preview = items.slice(0, 4);
+    const itemsHTML = preview.map((item, idx) => `
+      <div class="note-item-row">
+        <input type="checkbox" class="note-item-cb" ${item.done ? 'checked' : ''}
+          onclick="event.stopPropagation(); toggleNoteItem('${n.id}', ${idx})"
+          aria-label="${item.text}">
+        <span class="note-item-txt ${item.done ? 'done' : ''}"
+          onclick="event.stopPropagation(); toggleNoteItem('${n.id}', ${idx})">${item.text}</span>
+      </div>`).join('');
+    const moreHTML = items.length > 4
+      ? `<div style="font-size:10px;color:var(--text3);padding-left:22px;margin-top:2px">+${items.length-4} รายการ</div>` : '';
+    return `
+      <div class="note-card">
+        <div class="note-color-bar" style="background:${n.color||'#FFD180'}" onclick="openNoteEdit('${n.id}')"></div>
+        <div class="note-title-text" onclick="openNoteEdit('${n.id}')">${n.title}</div>
+        <div class="note-items-wrap">${itemsHTML}${moreHTML}</div>
+        <div class="note-card-footer">
+          <span class="note-card-count">${done}/${total} เสร็จ</span>
+          <button class="note-card-edit" onclick="openNoteEdit('${n.id}')">
+            <i class="ti ti-edit" style="font-size:13px"></i> แก้ไข
+          </button>
+        </div>
+      </div>`;
+  }).join('') + `<button class="note-add-card" onclick="openNoteModal()">
+    <i class="ti ti-plus" style="font-size:28px"></i>เพิ่ม note
+  </button>`;
+}
+
+async function toggleNoteItem(noteId, itemIdx) {
+  const n = notes.find(n => n.id === noteId);
+  if (!n) return;
+  n.items[itemIdx].done = !n.items[itemIdx].done;
+  await saveNoteToFirebase(n);
+}
+
+function openNoteModal() {
+  document.getElementById('note-modal-title').textContent = 'เพิ่ม note ใหม่';
+  document.getElementById('note-edit-id').value = '';
+  document.getElementById('note-title-input').value = '';
+  document.getElementById('note-delete-btn').style.display = 'none';
+  document.getElementById('note-items-list').innerHTML = '';
+  noteSelectedColor = '#FFD180';
+  document.querySelectorAll('.note-color-dot').forEach(d => d.classList.remove('sel'));
+  const first = document.querySelector('.note-color-dot[data-color="#FFD180"]');
+  if (first) first.classList.add('sel');
+  addNoteItemRow();
+  document.getElementById('note-modal').classList.add('open');
+  setTimeout(() => document.getElementById('note-title-input').focus(), 100);
+}
+
+function openNoteEdit(id) {
+  const n = notes.find(n => n.id === id);
+  if (!n) return;
+  document.getElementById('note-modal-title').textContent = 'แก้ไข note';
+  document.getElementById('note-edit-id').value = id;
+  document.getElementById('note-title-input').value = n.title;
+  document.getElementById('note-delete-btn').style.display = '';
+  noteSelectedColor = n.color || '#FFD180';
+  document.querySelectorAll('.note-color-dot').forEach(d => d.classList.remove('sel'));
+  const dot = document.querySelector(`.note-color-dot[data-color="${n.color}"]`);
+  if (dot) dot.classList.add('sel');
+  const list = document.getElementById('note-items-list');
+  list.innerHTML = '';
+  (n.items || []).forEach(i => addNoteItemRow(i.text, i.done));
+  document.getElementById('note-modal').classList.add('open');
+}
+
+function addNoteItemRow(text = '', done = false) {
+  const list = document.getElementById('note-items-list');
+  const row = document.createElement('div');
+  row.className = 'note-item-modal-row';
+  row.innerHTML = `
+    <input type="checkbox" class="note-item-modal-cb" ${done ? 'checked' : ''} aria-label="เสร็จแล้ว">
+    <input type="text" class="note-item-modal-txt" value="${text}" placeholder="รายการที่ต้องทำ...">
+    <button class="note-item-del" onclick="this.parentElement.remove()" aria-label="ลบ"><i class="ti ti-x"></i></button>`;
+  list.appendChild(row);
+  if (!text) setTimeout(() => row.querySelector('.note-item-modal-txt').focus(), 50);
+}
+
+function selectNoteColor(el) {
+  document.querySelectorAll('.note-color-dot').forEach(d => d.classList.remove('sel'));
+  el.classList.add('sel');
+  noteSelectedColor = el.dataset.color;
+}
+
+async function saveNote() {
+  const title = document.getElementById('note-title-input').value.trim();
+  if (!title) { document.getElementById('note-title-input').style.borderColor = 'var(--red)'; return; }
+  document.getElementById('note-title-input').style.borderColor = '';
+  const rows = document.querySelectorAll('#note-items-list .note-item-modal-row');
+  const items = Array.from(rows).map(r => ({
+    text: r.querySelector('.note-item-modal-txt').value.trim(),
+    done: r.querySelector('.note-item-modal-cb').checked,
+  })).filter(i => i.text);
+  const editId = document.getElementById('note-edit-id').value;
+  const noteData = {
+    id: editId || genId(),
+    title,
+    color: noteSelectedColor,
+    items,
+    createdAt: editId ? (notes.find(n => n.id === editId)?.createdAt || new Date().toISOString()) : new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  await saveNoteToFirebase(noteData);
+  closeModal('note-modal');
+  showToast(editId ? 'แก้ไข note แล้ว ✏️' : 'เพิ่ม note ใหม่แล้ว ✨');
+}
+
+async function deleteNote() {
+  const id = document.getElementById('note-edit-id').value;
+  if (!id || !confirm('ลบ note นี้?')) return;
+  await deleteNoteFromFirebase(id);
+  closeModal('note-modal');
+  showToast('ลบ note แล้ว');
+}
+
 </script>
 </body>
 </html>
